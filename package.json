@@ -1,8 +1,8 @@
 {
   "name": "content-delivery-network",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Content Delivery Network for KAT ITB 2023",
+  "author": "@KATITB2023",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

@@ -1,18 +1,31 @@
+import { Storage, Bucket } from '@google-cloud/storage';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SkipThrottle } from '@nestjs/throttler';
 import { EnvironmentVariables } from '~/src/env.validation';
 
 @Injectable()
 export class AppService implements OnModuleInit {
-  constructor(private configService: ConfigService<EnvironmentVariables>) {}
+  private readonly bucket: Bucket;
 
-  async onModuleInit() {
-    /** Do Something */
+  constructor(
+    private readonly configService: ConfigService<EnvironmentVariables>,
+  ) {
+    this.bucket = new Storage().bucket(
+      this.configService.get('BUCKET_NAME', { infer: true }) || 'oskm-web',
+    );
   }
 
-  @SkipThrottle()
-  get hello(): string {
+  async onModuleInit() {
+    await this.bucket.setCorsConfiguration([
+      {
+        method: ['GET', 'PUT', 'DELETE'],
+        origin: ['*'],
+        responseHeader: ['Content-Type'],
+      },
+    ]);
+  }
+
+  getHello(): string {
     return 'hello World!';
   }
 }

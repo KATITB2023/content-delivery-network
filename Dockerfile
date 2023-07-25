@@ -28,7 +28,9 @@ RUN yarn build
 
 # Production image, copy all the files and run nest
 FROM base AS runner
+
 WORKDIR /app
+
 ENV NODE_ENV production
 
 RUN addgroup --system --gid 1001 nodejs
@@ -37,9 +39,12 @@ RUN adduser --system --uid 1001 nestjs
 # Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/secret ./secret
 
 USER nestjs
 
-ENV PORT 3000
 EXPOSE 3000
+
+ENV PORT 3000
+
 CMD [ "node", "dist/main.js" ]
