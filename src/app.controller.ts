@@ -1,4 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Put,
+  Res,
+  UploadedFile,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AppService } from '~/src/app.service';
 
@@ -8,7 +19,99 @@ export class AppController {
 
   @Get()
   @SkipThrottle()
-  hello(): string {
+  hello() {
     return this.appService.getHello();
+  }
+
+  @Get(':filepath')
+  @SkipThrottle()
+  async downloadFile(
+    @Param('filepath') filepath: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    try {
+      const { streamableFile, contentType } =
+        await this.appService.downloadFile(filepath);
+
+      res.set({
+        'Content-Type': contentType,
+      });
+
+      return streamableFile;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+
+      if (error instanceof Error)
+        throw new HttpException(
+          {
+            status: HttpStatus.SERVICE_UNAVAILABLE,
+            message: 'Could not download file!',
+          },
+          HttpStatus.SERVICE_UNAVAILABLE,
+          {
+            cause: error,
+          },
+        );
+
+      throw new HttpException(
+        'Internal server error!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Put(':filepath')
+  async uploadFile(
+    @Param('filepath') filepath: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      return await this.appService.uploadFile(filepath, file);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+
+      if (error instanceof Error)
+        throw new HttpException(
+          {
+            status: HttpStatus.SERVICE_UNAVAILABLE,
+            message: 'Could not upload file!',
+          },
+          HttpStatus.SERVICE_UNAVAILABLE,
+          {
+            cause: error,
+          },
+        );
+
+      throw new HttpException(
+        'Internal server error!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Delete(':filepath')
+  async deleteFile(@Param('filepath') filepath: string) {
+    try {
+      return await this.appService.deleteFile(filepath);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+
+      if (error instanceof Error)
+        throw new HttpException(
+          {
+            status: HttpStatus.SERVICE_UNAVAILABLE,
+            message: 'Could not delete file!',
+          },
+          HttpStatus.SERVICE_UNAVAILABLE,
+          {
+            cause: error,
+          },
+        );
+
+      throw new HttpException(
+        'Internal server error!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

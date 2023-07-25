@@ -19,6 +19,9 @@ export class EnvironmentVariables {
 
   @IsString()
   public readonly BUCKET_NAME!: string;
+
+  @IsNumber()
+  public readonly URL_EXPIRATION_TIME!: number;
 }
 
 export const validate = (config: Record<string, unknown>) => {
