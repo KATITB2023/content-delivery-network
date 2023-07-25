@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  app:
+    platform: 'linux/amd64'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    ports:
+      - '3000:3000'
+    image: cdn-image
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - BUCKET_NAME=${BUCKET_NAME}

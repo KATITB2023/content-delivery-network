@@ -40,8 +40,6 @@ COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 
 USER nestjs
 
-EXPOSE 8080
-
-ENV PORT 8080
-
+ENV PORT 3000
+EXPOSE 3000
 CMD [ "node", "dist/main.js" ]
