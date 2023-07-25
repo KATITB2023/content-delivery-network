@@ -4,12 +4,17 @@ import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import helmet from 'helmet';
 import { EnvironmentVariables } from '~/src/env.validation';
+
 import { AppModule } from '~/src/app.module';
 
 async function bootstrap() {
+  /** Create Nest Application */
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
+
+  /** Get Configuration Service */
+  const configService = app.get(ConfigService<EnvironmentVariables>);
 
   /** Enable Helmet */
   app.use(helmet());
@@ -32,9 +37,6 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
-
-  /** Get Configuration Service */
-  const configService = app.get(ConfigService<EnvironmentVariables>);
 
   /** Get Port from Configuration */
   const port = configService.get('PORT', { infer: true }) || 3000;

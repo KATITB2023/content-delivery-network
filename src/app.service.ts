@@ -1,37 +1,24 @@
 import { Storage, Bucket } from '@google-cloud/storage';
-import { HttpService } from '@nestjs/axios';
 import {
   HttpException,
   HttpStatus,
   Injectable,
-  OnModuleInit,
   StreamableFile,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PassThrough, Stream } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import { EnvironmentVariables } from '~/src/env.validation';
 
 @Injectable()
-export class AppService implements OnModuleInit {
+export class AppService {
   private readonly bucket: Bucket;
 
   constructor(
     private readonly configService: ConfigService<EnvironmentVariables>,
-    private readonly httpService: HttpService,
   ) {
     this.bucket = new Storage().bucket(
       this.configService.get('BUCKET_NAME', { infer: true }) || 'oskm-web',
     );
-  }
-
-  async onModuleInit() {
-    await this.bucket.setCorsConfiguration([
-      {
-        method: ['GET', 'PUT', 'DELETE'],
-        origin: ['*'],
-        responseHeader: ['Content-Type'],
-      },
-    ]);
   }
 
   getHello() {
@@ -45,27 +32,15 @@ export class AppService implements OnModuleInit {
     if (!exists)
       throw new HttpException('File not found!', HttpStatus.NOT_FOUND);
 
-    const expirationTime =
-      this.configService.get('URL_EXPIRATION_TIME', {
-        infer: true,
-      }) || 3600000;
-
-    const [url] = await ref.getSignedUrl({
-      version: 'v4',
-      action: 'read',
-      expires: Date.now() + expirationTime,
-    });
-
-    const response = await this.httpService.axiosRef.get<Stream>(url, {
-      responseType: 'stream',
-    });
-
+    const readStream = ref.createReadStream();
     const passThrough = new PassThrough();
-    response.data.pipe(passThrough);
+    readStream.pipe(passThrough);
+
+    const [metadata] = await ref.getMetadata();
 
     return {
       streamableFile: new StreamableFile(passThrough),
-      contentType: response.headers['Content-Type'],
+      contentType: metadata.contentType,
     };
   }
 
@@ -76,22 +51,10 @@ export class AppService implements OnModuleInit {
     if (exists)
       throw new HttpException('File already exists!', HttpStatus.CONFLICT);
 
-    const expirationTime =
-      this.configService.get('URL_EXPIRATION_TIME', {
-        infer: true,
-      }) || 3600000;
+    const writeStream = ref.createWriteStream();
+    const fileStream = Readable.from(file.buffer);
 
-    const [url] = await ref.getSignedUrl({
-      version: 'v4',
-      action: 'write',
-      expires: Date.now() + expirationTime,
-    });
-
-    return await this.httpService.axiosRef.put<void>(url, file.buffer, {
-      headers: {
-        'Content-Type': file.mimetype,
-      },
-    });
+    fileStream.pipe(writeStream);
   }
 
   async deleteFile(filepath: string) {
@@ -101,17 +64,6 @@ export class AppService implements OnModuleInit {
     if (!exists)
       throw new HttpException('File not found!', HttpStatus.NOT_FOUND);
 
-    const expirationTime =
-      this.configService.get('URL_EXPIRATION_TIME', {
-        infer: true,
-      }) || 3600000;
-
-    const [url] = await ref.getSignedUrl({
-      version: 'v4',
-      action: 'delete',
-      expires: Date.now() + expirationTime,
-    });
-
-    return await this.httpService.axiosRef.delete<void>(url);
+    await ref.delete();
   }
 }

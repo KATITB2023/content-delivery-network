@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { HttpModule } from '@nestjs/axios';
 import { APP_GUARD } from '@nestjs/core';
 import { validate } from '~/src/env.validation';
 import { configuration } from '~/src/env.configuration';
@@ -20,7 +19,6 @@ import { AppService } from '~/src/app.service';
       ttl: 60,
       limit: 10,
     }),
-    HttpModule,
   ],
   controllers: [AppController],
   providers: [

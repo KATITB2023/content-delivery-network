@@ -8,10 +8,12 @@ import {
   Put,
   Res,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AppService } from '~/src/app.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller()
 export class AppController {
@@ -61,6 +63,7 @@ export class AppController {
   }
 
   @Put(':filepath')
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @Param('filepath') filepath: string,
     @UploadedFile() file: Express.Multer.File,
