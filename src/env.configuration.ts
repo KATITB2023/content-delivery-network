@@ -6,4 +6,5 @@ export const configuration = () => ({
   URL_EXPIRATION_TIME: process.env.URL_EXPIRATION_TIME
     ? +process.env.URL_EXPIRATION_TIME
     : undefined,
+  API_KEY: process.env.API_KEY ? process.env.API_KEY.split(',') : undefined,
 });

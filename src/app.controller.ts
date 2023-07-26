@@ -8,12 +8,14 @@ import {
   Put,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { SkipThrottle } from '@nestjs/throttler';
-import { AppService } from '~/src/app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AppService } from '~/src/app.service';
+import { ApiKeyAuthGuard } from '~/src/auth/auth.guard';
 
 @Controller()
 export class AppController {
@@ -64,6 +66,7 @@ export class AppController {
 
   @Put(':filepath')
   @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(ApiKeyAuthGuard)
   async uploadFile(
     @Param('filepath') filepath: string,
     @UploadedFile() file: Express.Multer.File,
@@ -93,6 +96,7 @@ export class AppController {
   }
 
   @Delete(':filepath')
+  @UseGuards(ApiKeyAuthGuard)
   async deleteFile(@Param('filepath') filepath: string) {
     try {
       return await this.appService.deleteFile(filepath);

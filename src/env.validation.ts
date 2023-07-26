@@ -22,6 +22,9 @@ export class EnvironmentVariables {
 
   @IsNumber()
   public readonly URL_EXPIRATION_TIME!: number;
+
+  @IsString({ each: true })
+  public readonly API_KEY!: string[];
 }
 
 export const validate = (config: Record<string, unknown>) => {

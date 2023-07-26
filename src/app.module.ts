@@ -6,6 +6,8 @@ import { validate } from '~/src/env.validation';
 import { configuration } from '~/src/env.configuration';
 import { AppController } from '~/src/app.controller';
 import { AppService } from '~/src/app.service';
+import { AuthService } from '~/src/auth/auth.service';
+import { AuthModule } from '~/src/auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { AppService } from '~/src/app.service';
       ttl: 60,
       limit: 10,
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
@@ -27,6 +30,7 @@ import { AppService } from '~/src/app.service';
       useClass: ThrottlerGuard,
     },
     AppService,
+    AuthService,
   ],
 })
 export class AppModule {}

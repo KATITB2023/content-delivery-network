@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import helmet from 'helmet';
 import { EnvironmentVariables } from '~/src/env.validation';
-
 import { AppModule } from '~/src/app.module';
 
 async function bootstrap() {
