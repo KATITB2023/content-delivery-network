@@ -1,10 +1,12 @@
 import {
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  ParseFilePipe,
   Put,
   Res,
   UploadedFile,
@@ -69,7 +71,17 @@ export class AppController {
   @UseGuards(ApiKeyAuthGuard)
   async uploadFile(
     @Param('filepath') filepath: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({
+            fileType:
+              /image\/jpeg|image\/png|image\/svg\+xml|application\/pdf|application\/zip/,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
   ) {
     try {
       return await this.appService.uploadFile(filepath, file);
