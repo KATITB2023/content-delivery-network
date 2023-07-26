@@ -14,3 +14,9 @@ services:
       - BUCKET_NAME=${BUCKET_NAME}
       - URL_EXPIRATION_TIME=${URL_EXPIRATION_TIME}
       - API_KEY=${API_KEY}
+    secrets:
+      - gcp-credentials
+
+secrets:
+  gcp-credentials:
+    file: ${GOOGLE_APPLICATION_CREDENTIALS}
