@@ -47,7 +47,8 @@ export class AppController {
     } catch (error) {
       if (error instanceof HttpException) throw error;
 
-      if (error instanceof Error)
+      if (error instanceof Error) {
+        console.log('error:', error);
         throw new HttpException(
           {
             status: HttpStatus.SERVICE_UNAVAILABLE,
@@ -58,6 +59,7 @@ export class AppController {
             cause: error,
           },
         );
+      }
 
       throw new HttpException(
         'Internal server error!',
@@ -88,7 +90,8 @@ export class AppController {
     } catch (error) {
       if (error instanceof HttpException) throw error;
 
-      if (error instanceof Error)
+      if (error instanceof Error) {
+        console.log('error:', error);
         throw new HttpException(
           {
             status: HttpStatus.SERVICE_UNAVAILABLE,
@@ -99,6 +102,7 @@ export class AppController {
             cause: error,
           },
         );
+      }
 
       throw new HttpException(
         'Internal server error!',
@@ -115,7 +119,8 @@ export class AppController {
     } catch (error) {
       if (error instanceof HttpException) throw error;
 
-      if (error instanceof Error)
+      if (error instanceof Error) {
+        console.log('error:', error);
         throw new HttpException(
           {
             status: HttpStatus.SERVICE_UNAVAILABLE,
@@ -126,6 +131,7 @@ export class AppController {
             cause: error,
           },
         );
+      }
 
       throw new HttpException(
         'Internal server error!',
