@@ -9,7 +9,7 @@ export class AuthService {
   ) {}
 
   validateApiKey(apiKey: string) {
-    const apiKeys = this.configService.get<string[]>('API_KEY') || [];
+    const apiKeys = this.configService.get('API_KEY', { infer: true }) || [];
 
     return apiKeys.includes(apiKey);
   }
