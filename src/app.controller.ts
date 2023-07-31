@@ -78,7 +78,7 @@ export class AppController {
         validators: [
           new FileTypeValidator({
             fileType:
-              /image\/jpeg|image\/png|image\/svg\+xml|application\/pdf|application\/zip/,
+              /image\/jpeg|image\/png|image\/svg\+xml|application\/pdf|application\/zip|audio\/mpeg/,
           }),
         ],
       }),
