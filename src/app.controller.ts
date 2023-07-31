@@ -14,7 +14,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { SkipThrottle } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from '~/src/app.service';
 import { ApiKeyAuthGuard } from '~/src/auth/auth.guard';
@@ -24,13 +23,11 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @SkipThrottle()
   hello() {
     return this.appService.getHello();
   }
 
   @Get(':filepath')
-  @SkipThrottle()
   async downloadFile(
     @Param('filepath') filepath: string,
     @Res({ passthrough: true }) res: Response,
