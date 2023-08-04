@@ -25,7 +25,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get(':filepath')
+  @Get(':filepath(*)')
   async downloadFile(
     @Param('filepath') filepath: string,
     @Res({ passthrough: true }) res: Response,
@@ -63,7 +63,7 @@ export class AppController {
     }
   }
 
-  @Put(':filepath')
+  @Put(':filepath(*)')
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(ApiKeyAuthGuard)
   async uploadFile(
@@ -97,7 +97,7 @@ export class AppController {
     }
   }
 
-  @Delete(':filepath')
+  @Delete(':filepath(*)')
   @UseGuards(ApiKeyAuthGuard)
   async deleteFile(@Param('filepath') filepath: string) {
     try {
