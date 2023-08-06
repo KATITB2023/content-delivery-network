@@ -9,6 +9,7 @@ import { AppModule } from '~/src/app.module';
 async function bootstrap() {
   /** Create Nest Application */
   const app = await NestFactory.create(AppModule, {
+    cors: true,
     bufferLogs: true,
   });
 
@@ -16,13 +17,14 @@ async function bootstrap() {
   const configService = app.get(ConfigService<EnvironmentVariables>);
 
   /** Enable Helmet */
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: false,
+    }),
+  );
 
   /** Enable GZIP Compression */
   app.use(compression());
-
-  /** Enable CORS */
-  app.enableCors();
 
   /** Enable Input Validation */
   app.useGlobalPipes(
